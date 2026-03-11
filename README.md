@@ -1,5 +1,8 @@
 # NestJS Exception Handler
 
+[![npm version](https://badge.fury.io/js/nestjs-exception-handler.svg)](https://badge.fury.io/js/nestjs-exception-handler)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A production-grade global exception handling system for NestJS applications that provides standardized error responses, supports Prisma errors, DTO validation, HTTP exceptions, and more.
 
 ## Features
@@ -216,6 +219,22 @@ export class CustomExceptionFormatter implements ExceptionFormatter {
 }
 ```
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
 ## License
 
 MIT
+
+## Author
+
+**Nurul Islam Rimon**
+
+- GitHub: [nurulislamrimon](https://github.com/nurulislamrimon)

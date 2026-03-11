@@ -33,11 +33,11 @@
     "prisma",
     "validation"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "Nurul Islam Rimon",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/nestjs-exception-handler.git"
+    "url": "https://github.com/nurulislamrimon/nestjs-exception-handler.git"
   },
   "peerDependencies": {
     "@nestjs/common": "^10.0.0",
