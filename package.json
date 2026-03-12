@@ -1,6 +1,6 @@
 {
   "name": "nestjs-exception-handler",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A production-grade global exception handling system for NestJS applications",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -42,7 +42,7 @@
   "peerDependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
-    "@prisma/client": "^5.0.0",
+    "@prisma/client": "^5.0.0 || ^7.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0"
   },
@@ -68,5 +68,7 @@
     "tsup": "^7.0.0",
     "typescript": "^5.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "nestjs-exception-handler": "^1.0.1"
+  }
 }
