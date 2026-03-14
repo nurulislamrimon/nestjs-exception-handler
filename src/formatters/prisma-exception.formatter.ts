@@ -6,6 +6,7 @@ import {
   PrismaClientInitializationError,
 } from '@prisma/client/runtime/library';
 import { IErrorMessage } from '../interfaces/error-message.interface';
+import { ExceptionFormatter } from '../interfaces/exception-formatter.interface';
 
 type PrismaError =
   | PrismaClientKnownRequestError
@@ -15,7 +16,24 @@ type PrismaError =
   | unknown;
 
 @Injectable()
-export class PrismaExceptionFormatter {
+export class PrismaExceptionFormatter implements ExceptionFormatter {
+  supports(exception: unknown): boolean {
+    return (
+      exception instanceof PrismaClientKnownRequestError ||
+      exception instanceof PrismaClientValidationError ||
+      exception instanceof PrismaClientRustPanicError ||
+      exception instanceof PrismaClientInitializationError
+    );
+  }
+
+  format(exception: unknown): IErrorMessage[] {
+    return this.formatError(exception as PrismaError);
+  }
+
+  message(_exception: unknown): string {
+    return 'Database error';
+  }
+
   formatError(exception: PrismaError): IErrorMessage[] {
     if (exception instanceof PrismaClientKnownRequestError) {
       return this.formatPrismaError(exception);

@@ -10,4 +10,4 @@ export * from './formatters/other-exception.formatter';
 export * from './exception-filter/global-exception.filter';
 
 // Module
-export * from './exception-handler.module';
+export * from './module/exception-handler.module';
