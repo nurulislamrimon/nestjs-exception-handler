@@ -1,20 +1,13 @@
 // Interfaces
 export * from './interfaces';
 
-// Constants
-export * from './constants';
-
-// Utilities
-export * from './utils/is-prisma-error';
-
 // Formatters
-export * from './formatters';
-
-// Services
-export * from './services/exception-handler.service';
+export * from './formatters/prisma-exception.formatter';
+export * from './formatters/dto-validation.formatter';
+export * from './formatters/other-exception.formatter';
 
 // Filters
-export * from './filter/global-exception.filter';
+export * from './exception-filter/global-exception.filter';
 
 // Module
-export * from './module/exception-handler.module';
+export * from './exception-handler.module';

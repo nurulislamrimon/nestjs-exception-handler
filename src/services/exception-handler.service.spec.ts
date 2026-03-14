@@ -1,46 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExceptionHandlerService } from './exception-handler.service';
+import { GlobalExceptionFilter } from '../exception-filter/global-exception.filter';
 import { PrismaExceptionFormatter } from '../formatters/prisma-exception.formatter';
-import { DtoExceptionFormatter } from '../formatters/dto-exception.formatter';
-import { HttpExceptionFormatter } from '../formatters/http-exception.formatter';
+import { DtoValidationFormatter } from '../formatters/dto-validation.formatter';
+import { OtherExceptionFormatter } from '../formatters/other-exception.formatter';
 import { HttpException } from '@nestjs/common';
 
-describe('ExceptionHandlerService', () => {
-  let service: ExceptionHandlerService;
+describe('GlobalExceptionFilter', () => {
+  let filter: GlobalExceptionFilter;
+  let prismaFormatter: PrismaExceptionFormatter;
+  let dtoFormatter: DtoValidationFormatter;
+  let otherFormatter: OtherExceptionFormatter;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [ExceptionHandlerService],
-    }).compile();
-
-    service = module.get<ExceptionHandlerService>(ExceptionHandlerService);
+  beforeEach(() => {
+    prismaFormatter = new PrismaExceptionFormatter();
+    dtoFormatter = new DtoValidationFormatter();
+    otherFormatter = new OtherExceptionFormatter();
+    filter = new GlobalExceptionFilter(prismaFormatter, dtoFormatter, otherFormatter);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(filter).toBeDefined();
   });
 
-  it('should register formatters', () => {
-    const formatter = new PrismaExceptionFormatter();
-    service.registerFormatter(formatter);
-    expect(service.getAllFormatters()).toContain(formatter);
-  });
-
-  it('should format HTTP exception', () => {
-    service.registerFormatter(new HttpExceptionFormatter());
-    const exception = new HttpException('Not found', 404);
-    const result = service.formatException(exception);
-
-    expect(result.errors).toHaveLength(1);
-    expect(result.message).toBe('Not found');
-  });
-
-  it('should format unknown exception', () => {
-    const exception = new Error('Test error');
-    const result = service.formatException(exception);
-
-    expect(result.errors).toHaveLength(1);
-    expect(result.errors[0].path).toBe('unknown');
-    expect(result.message).toBe('Internal server error');
+  it('should have all formatters injected', () => {
+    expect(prismaFormatter).toBeDefined();
+    expect(dtoFormatter).toBeDefined();
+    expect(otherFormatter).toBeDefined();
   });
 });

@@ -1,6 +1,6 @@
 {
   "name": "nestjs-exception-handler",
-  "version": "1.0.1",
+  "version": "4.1.0",
   "description": "A production-grade global exception handling system for NestJS applications",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -68,7 +68,5 @@
     "tsup": "^7.0.0",
     "typescript": "^5.0.0"
   },
-  "dependencies": {
-    "nestjs-exception-handler": "^1.0.1"
-  }
+  "dependencies": {}
 }
