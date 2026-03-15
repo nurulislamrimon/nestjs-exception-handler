@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
-import { IErrorMessage } from '../interfaces/error-message.interface';
+import { ErrorMessage } from '../interfaces/error-message.interface';
 
 interface ValidationError {
   property: string;
@@ -10,7 +10,7 @@ interface ValidationError {
 
 @Injectable()
 export class DtoValidationFormatter {
-  formatDtoValidationException(exception: HttpException): IErrorMessage[] {
+  formatDtoValidationException(exception: HttpException): ErrorMessage[] {
     const responseBody: unknown = exception.getResponse();
 
     if (
@@ -31,10 +31,17 @@ export class DtoValidationFormatter {
         const validationErrors = messages as ValidationError[];
         return validationErrors.map((error: ValidationError) => ({
           path: error.property,
-          message: error.constraints
-            ? Object.values(error.constraints).join(', ')
-            : 'Validation error',
+          message: error.constraints ? Object.values(error.constraints) : ['Validation error'],
         }));
+      }
+
+      if (typeof firstMessage === 'string') {
+        return [
+          {
+            path: 'http_error',
+            message: messages as string[],
+          },
+        ];
       }
     }
 
@@ -43,8 +50,8 @@ export class DtoValidationFormatter {
         path: 'http_error',
         message:
           typeof responseBody === 'object' && responseBody !== null && 'message' in responseBody
-            ? String((responseBody as Record<string, unknown>).message)
-            : 'An HTTP error occurred',
+            ? [(responseBody as Record<string, unknown>).message as string]
+            : ['An HTTP error occurred'],
       },
     ];
   }

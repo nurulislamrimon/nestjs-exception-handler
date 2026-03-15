@@ -17,7 +17,7 @@ describe('PrismaExceptionFormatter', () => {
 
     const result = formatter.formatError(prismaError);
     expect(result).toEqual([
-      { path: 'email', message: 'A record with this email already exists.' },
+      { path: 'email', message: ['A record with this email already exists.'] },
     ]);
   });
 
@@ -29,7 +29,9 @@ describe('PrismaExceptionFormatter', () => {
     });
 
     const result = formatter.formatError(prismaError);
-    expect(result).toEqual([{ path: 'userId', message: 'The referenced userId does not exist.' }]);
+    expect(result).toEqual([
+      { path: 'userId', message: ['The referenced userId does not exist.'] },
+    ]);
   });
 
   it('should format P2005 error correctly', () => {
@@ -40,7 +42,7 @@ describe('PrismaExceptionFormatter', () => {
     });
 
     const result = formatter.formatError(prismaError);
-    expect(result).toEqual([{ path: 'age', message: 'The value for age is invalid.' }]);
+    expect(result).toEqual([{ path: 'age', message: ['The value for age is invalid.'] }]);
   });
 
   it('should format P2006 error correctly', () => {
@@ -51,7 +53,7 @@ describe('PrismaExceptionFormatter', () => {
     });
 
     const result = formatter.formatError(prismaError);
-    expect(result).toEqual([{ path: 'name', message: 'The name field is required.' }]);
+    expect(result).toEqual([{ path: 'name', message: ['The name field is required.'] }]);
   });
 
   it('should format P2025 error correctly', () => {
@@ -62,7 +64,7 @@ describe('PrismaExceptionFormatter', () => {
     });
 
     const result = formatter.formatError(prismaError);
-    expect(result).toEqual([{ path: 'record', message: 'The requested record does not exist.' }]);
+    expect(result).toEqual([{ path: 'record', message: ['The requested record does not exist.'] }]);
   });
 
   it('should format unknown Prisma error code', () => {
@@ -72,6 +74,6 @@ describe('PrismaExceptionFormatter', () => {
     });
 
     const result = formatter.formatError(prismaError);
-    expect(result).toEqual([{ path: 'database', message: 'Database operation failed.' }]);
+    expect(result).toEqual([{ path: 'database', message: ['Database operation failed.'] }]);
   });
 });

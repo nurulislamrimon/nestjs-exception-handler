@@ -1,30 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GlobalExceptionFilter } from '../exception-filter/global-exception.filter';
-import { PrismaExceptionFormatter } from '../formatters/prisma-exception.formatter';
-import { DtoValidationFormatter } from '../formatters/dto-validation.formatter';
-import { OtherExceptionFormatter } from '../formatters/other-exception.formatter';
-import { HttpException } from '@nestjs/common';
+import { GlobalExceptionFilter } from '../filter/global-exception.filter';
+import { ExceptionHandlerService } from './exception-handler.service';
 
-describe('GlobalExceptionFilter', () => {
-  let filter: GlobalExceptionFilter;
-  let prismaFormatter: PrismaExceptionFormatter;
-  let dtoFormatter: DtoValidationFormatter;
-  let otherFormatter: OtherExceptionFormatter;
+describe('ExceptionHandlerService', () => {
+  let service: ExceptionHandlerService;
 
   beforeEach(() => {
-    prismaFormatter = new PrismaExceptionFormatter();
-    dtoFormatter = new DtoValidationFormatter();
-    otherFormatter = new OtherExceptionFormatter();
-    filter = new GlobalExceptionFilter(prismaFormatter, dtoFormatter, otherFormatter);
+    service = new ExceptionHandlerService();
   });
 
   it('should be defined', () => {
-    expect(filter).toBeDefined();
+    expect(service).toBeDefined();
   });
 
-  it('should have all formatters injected', () => {
-    expect(prismaFormatter).toBeDefined();
-    expect(dtoFormatter).toBeDefined();
-    expect(otherFormatter).toBeDefined();
+  it('should have default formatters registered', () => {
+    const formatters = service.getAllFormatters();
+    expect(formatters.length).toBeGreaterThan(0);
   });
 });

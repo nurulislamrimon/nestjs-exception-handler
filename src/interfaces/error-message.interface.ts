@@ -1,12 +1,10 @@
-export interface IErrorMessage {
+export interface ErrorMessage {
   path: string;
-  message: string;
+  message: string[];
 }
 
-export type ErrorMessage = IErrorMessage;
-
-export interface StandardErrorResponse {
+export interface ErrorResponse {
   success: boolean;
   message: string;
-  errorMessages: IErrorMessage[];
+  errorMessages: ErrorMessage[];
 }

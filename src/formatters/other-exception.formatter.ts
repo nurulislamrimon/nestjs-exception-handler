@@ -1,19 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { IErrorMessage } from '../interfaces/error-message.interface';
+import { ErrorMessage } from '../interfaces/error-message.interface';
 
 @Injectable()
 export class OtherExceptionFormatter {
-  formatOtherError(exception: unknown): IErrorMessage[] {
+  formatOtherError(exception: unknown): ErrorMessage[] {
     if (
       exception &&
       typeof exception === 'object' &&
       'path' in exception &&
       'message' in exception
     ) {
+      const msg = (exception as Record<string, unknown>).message;
       return [
         {
           path: String((exception as Record<string, unknown>).path),
-          message: String((exception as Record<string, unknown>).message),
+          message: Array.isArray(msg) ? msg : [String(msg)],
         },
       ];
     }
@@ -26,7 +27,7 @@ export class OtherExceptionFormatter {
     return [
       {
         path: 'unknown',
-        message,
+        message: [message],
       },
     ];
   }

@@ -28,7 +28,7 @@ export class DtoExceptionFormatter implements ExceptionFormatter {
       return this.formatChildrenErrors(children);
     }
 
-    return [{ path: 'unknown', message: 'Validation failed' }];
+    return [{ path: 'unknown', message: ['Validation failed'] }];
   }
 
   message(exception: unknown): string {
@@ -55,10 +55,12 @@ export class DtoExceptionFormatter implements ExceptionFormatter {
     return errors.flatMap((error) => {
       const constraints = error.constraints;
       if (constraints) {
-        return Object.entries(constraints).map(([, value]) => ({
-          path: error.property,
-          message: value,
-        }));
+        return [
+          {
+            path: error.property,
+            message: Object.values(constraints),
+          },
+        ];
       }
       return [];
     });
@@ -68,10 +70,12 @@ export class DtoExceptionFormatter implements ExceptionFormatter {
     return children.flatMap((child) => {
       const constraints = child.constraints;
       if (constraints) {
-        return Object.entries(constraints).map(([, value]) => ({
-          path: child.property,
-          message: value,
-        }));
+        return [
+          {
+            path: child.property,
+            message: Object.values(constraints),
+          },
+        ];
       }
       return [];
     });

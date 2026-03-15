@@ -11,12 +11,12 @@ export class UnknownExceptionFormatter implements ExceptionFormatter {
     return [
       {
         path: DEFAULT_PATH,
-        message: 'Internal server error',
+        message: ['Something went wrong'],
       },
     ];
   }
 
   message(_exception: unknown): string {
-    return 'Internal server error';
+    return 'Internal Server Error';
   }
 }

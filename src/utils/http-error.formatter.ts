@@ -1,15 +1,9 @@
 import { HttpException } from '@nestjs/common';
-import { ExceptionFormatter } from '../interfaces/exception-formatter.interface';
 import { ErrorMessage } from '../interfaces/error-message.interface';
 
-export class HttpExceptionFormatter implements ExceptionFormatter {
-  supports(exception: unknown): boolean {
-    return exception instanceof HttpException;
-  }
-
-  format(exception: unknown): ErrorMessage[] {
-    const httpException = exception as HttpException;
-    const response = httpException.getResponse();
+export class HttpErrorFormatter {
+  formatHttpException(exception: HttpException): ErrorMessage[] {
+    const response = exception.getResponse();
 
     if (typeof response === 'string') {
       return [{ path: 'http_error', message: [response] }];
@@ -18,7 +12,7 @@ export class HttpExceptionFormatter implements ExceptionFormatter {
     if (typeof response === 'object' && response !== null) {
       const responseObj = response as Record<string, unknown>;
 
-      if (responseObj.message && Array.isArray(responseObj.message)) {
+      if (Array.isArray(responseObj.message)) {
         return [
           {
             path: 'http_error',
@@ -27,8 +21,8 @@ export class HttpExceptionFormatter implements ExceptionFormatter {
         ];
       }
 
-      if (responseObj.message && typeof responseObj.message === 'string') {
-        return [{ path: 'http_error', message: [responseObj.message as string] }];
+      if (typeof responseObj.message === 'string') {
+        return [{ path: 'http_error', message: [responseObj.message] }];
       }
 
       if (responseObj.error && typeof responseObj.error === 'string') {
@@ -39,9 +33,8 @@ export class HttpExceptionFormatter implements ExceptionFormatter {
     return [{ path: 'http_error', message: ['An error occurred'] }];
   }
 
-  message(exception: unknown): string {
-    const httpException = exception as HttpException;
-    const response = httpException.getResponse();
+  getMessage(exception: HttpException): string {
+    const response = exception.getResponse();
 
     if (typeof response === 'string') {
       return response;
@@ -50,12 +43,12 @@ export class HttpExceptionFormatter implements ExceptionFormatter {
     if (typeof response === 'object' && response !== null) {
       const responseObj = response as Record<string, unknown>;
 
-      if (responseObj.message && typeof responseObj.message === 'string') {
-        return responseObj.message as string;
+      if (typeof responseObj.message === 'string') {
+        return responseObj.message;
       }
 
       if (responseObj.error && typeof responseObj.error === 'string') {
-        return responseObj.error as string;
+        return responseObj.error;
       }
     }
 

@@ -5,7 +5,7 @@ import {
   PrismaClientRustPanicError,
   PrismaClientInitializationError,
 } from '@prisma/client/runtime/library';
-import { IErrorMessage } from '../interfaces/error-message.interface';
+import { ErrorMessage } from '../interfaces/error-message.interface';
 import { ExceptionFormatter } from '../interfaces/exception-formatter.interface';
 
 type PrismaError =
@@ -26,7 +26,7 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
     );
   }
 
-  format(exception: unknown): IErrorMessage[] {
+  format(exception: unknown): ErrorMessage[] {
     return this.formatError(exception as PrismaError);
   }
 
@@ -34,7 +34,7 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
     return 'Database error';
   }
 
-  formatError(exception: PrismaError): IErrorMessage[] {
+  formatError(exception: PrismaError): ErrorMessage[] {
     if (exception instanceof PrismaClientKnownRequestError) {
       return this.formatPrismaError(exception);
     }
@@ -53,7 +53,7 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
     return this.formatUnknownError(exception);
   }
 
-  private formatPrismaError(exception: PrismaClientKnownRequestError): IErrorMessage[] {
+  private formatPrismaError(exception: PrismaClientKnownRequestError): ErrorMessage[] {
     const code = exception.code;
     const meta = exception.meta as Record<string, unknown> | undefined;
 
@@ -64,7 +64,7 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
         return [
           {
             path: field,
-            message: `A record with this ${field} already exists.`,
+            message: [`A record with this ${field} already exists.`],
           },
         ];
       }
@@ -73,7 +73,7 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
         return [
           {
             path: fieldName || 'field',
-            message: `The referenced ${fieldName || 'record'} does not exist.`,
+            message: [`The referenced ${fieldName || 'record'} does not exist.`],
           },
         ];
       }
@@ -82,7 +82,7 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
         return [
           {
             path: fieldName || 'field',
-            message: `The value for ${fieldName || 'field'} is invalid.`,
+            message: [`The value for ${fieldName || 'field'} is invalid.`],
           },
         ];
       }
@@ -91,7 +91,7 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
         return [
           {
             path: fieldName || 'field',
-            message: `The ${fieldName || 'field'} field is required.`,
+            message: [`The ${fieldName || 'field'} field is required.`],
           },
         ];
       }
@@ -99,7 +99,7 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
         return [
           {
             path: 'record',
-            message: 'The requested record does not exist.',
+            message: ['The requested record does not exist.'],
           },
         ];
       }
@@ -107,7 +107,7 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
         return [
           {
             path: 'database',
-            message: 'Database operation failed.',
+            message: ['Database operation failed.'],
           },
         ];
     }
@@ -115,7 +115,7 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
 
   private formatQueryError(
     exception: PrismaClientValidationError | PrismaClientRustPanicError,
-  ): IErrorMessage[] {
+  ): ErrorMessage[] {
     let message = 'Invalid database query.';
 
     if (exception instanceof PrismaClientRustPanicError) {
@@ -125,26 +125,28 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
     return [
       {
         path: 'database',
-        message,
+        message: [message],
       },
     ];
   }
 
-  private formatInitializationError(exception: PrismaClientInitializationError): IErrorMessage[] {
+  private formatInitializationError(exception: PrismaClientInitializationError): ErrorMessage[] {
     return [
       {
         path: 'database',
-        message: `Database initialization error: ${exception.message}`,
+        message: [`Database initialization error: ${exception.message}`],
       },
     ];
   }
 
-  private formatUnknownError(exception: unknown): IErrorMessage[] {
+  private formatUnknownError(exception: unknown): ErrorMessage[] {
     return [
       {
         path: 'unknown',
         message:
-          exception instanceof Error ? exception.message : 'An unexpected database error occurred.',
+          exception instanceof Error
+            ? [exception.message]
+            : ['An unexpected database error occurred.'],
       },
     ];
   }

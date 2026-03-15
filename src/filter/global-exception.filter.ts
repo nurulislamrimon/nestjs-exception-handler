@@ -5,10 +5,11 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ExceptionHandlerService } from '../services/exception-handler.service';
-import { StandardErrorResponse } from '../interfaces/error-message.interface';
+import { ErrorResponse, ErrorMessage } from '../interfaces/error-message.interface';
 import { ExceptionHandlerConfig } from '../interfaces/exception-handler-config.interface';
 
 @Catch()
@@ -29,16 +30,40 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     const { errors, message } = this.exceptionHandlerService.formatException(exception);
-    const status = this.getStatusCode(exception);
+    let status = this.getStatusCode(exception);
 
-    const errorResponse: StandardErrorResponse = {
+    let finalErrors = errors;
+    let finalMessage = message;
+
+    if (exception instanceof NotFoundException) {
+      const exceptionResponse = exception.getResponse();
+      if (
+        typeof exceptionResponse === 'object' &&
+        exceptionResponse !== null &&
+        'message' in exceptionResponse
+      ) {
+        const msg = exceptionResponse.message;
+        if (typeof msg === 'string' && msg.includes('Cannot')) {
+          status = HttpStatus.NOT_FOUND;
+          finalMessage = 'Route Not Found';
+          finalErrors = [
+            {
+              path: 'route',
+              message: [msg],
+            },
+          ];
+        }
+      }
+    }
+
+    const errorResponse: ErrorResponse = {
       success: false,
-      message,
-      errorMessages: errors,
+      message: finalMessage,
+      errorMessages: finalErrors,
     };
 
     if (this.config.enableLogging) {
-      this.logError(request, status, errors, exception);
+      this.logError(request, status, finalErrors, exception);
     }
 
     response.status(status).json(errorResponse);
@@ -54,7 +79,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private logError(
     request: Request,
     status: number,
-    errorMessages: { path: string; message: string }[],
+    errorMessages: ErrorMessage[],
     exception: unknown,
   ): void {
     const method = request.method;

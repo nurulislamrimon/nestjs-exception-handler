@@ -17,7 +17,7 @@ import {
 import { PrismaExceptionFormatter } from '../formatters/prisma-exception.formatter';
 import { DtoValidationFormatter } from '../formatters/dto-validation.formatter';
 import { OtherExceptionFormatter } from '../formatters/other-exception.formatter';
-import { IErrorMessage } from '../interfaces/error-message.interface';
+import { ErrorMessage } from '../interfaces/error-message.interface';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -56,7 +56,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const status =
       exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    let errorMessages: IErrorMessage[] = [{ path: 'unknown', message: 'Internal server error' }];
+    let errorMessages: ErrorMessage[] = [{ path: 'unknown', message: ['Internal server error'] }];
 
     if (
       exception instanceof PrismaClientKnownRequestError ||

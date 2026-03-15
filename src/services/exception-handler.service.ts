@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ExceptionFormatter } from '../interfaces/exception-formatter.interface';
 import { ErrorMessage } from '../interfaces/error-message.interface';
+import { PrismaExceptionFormatter } from '../formatters/prisma-exception.formatter';
+import { HttpExceptionFormatter } from '../formatters/http-exception.formatter';
+import { DtoExceptionFormatter } from '../formatters/dto-exception.formatter';
 import { UnknownExceptionFormatter } from '../formatters/unknown-exception.formatter';
 
 @Injectable()
@@ -10,6 +13,15 @@ export class ExceptionHandlerService {
 
   constructor() {
     this.defaultFormatter = new UnknownExceptionFormatter();
+    this.registerFormatters();
+  }
+
+  private registerFormatters(): void {
+    this.formatters = [
+      new PrismaExceptionFormatter(),
+      new HttpExceptionFormatter(),
+      new DtoExceptionFormatter(),
+    ];
   }
 
   registerFormatter(formatter: ExceptionFormatter): void {
