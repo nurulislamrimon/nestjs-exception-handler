@@ -18,10 +18,17 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private config: ExceptionHandlerConfig;
 
   constructor(
-    private exceptionHandlerService: ExceptionHandlerService,
+    private exceptionHandlerService?: ExceptionHandlerService,
     config?: ExceptionHandlerConfig,
   ) {
     this.config = config || { enableLogging: true, hideStackTrace: false };
+  }
+
+  private getService(): ExceptionHandlerService {
+    if (!this.exceptionHandlerService) {
+      this.exceptionHandlerService = new ExceptionHandlerService();
+    }
+    return this.exceptionHandlerService;
   }
 
   catch(exception: unknown, host: ArgumentsHost): void {
@@ -29,7 +36,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const { errors, message } = this.exceptionHandlerService.formatException(exception);
+    const { errors, message } = this.getService().formatException(exception);
     let status = this.getStatusCode(exception);
 
     let finalErrors = errors;

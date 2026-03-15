@@ -1,6 +1,6 @@
 {
   "name": "nestjs-exception-handler",
-  "version": "4.3.0",
+  "version": "4.4.0",
   "description": "A production-grade global exception handling system for NestJS applications",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
