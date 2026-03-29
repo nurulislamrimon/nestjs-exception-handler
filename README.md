@@ -27,7 +27,7 @@ This package ensures **every error response follows the same standardized format
 - **Extensible**: Plugin system for custom formatters
 - **Type Safe**: Full TypeScript support with zero `any` types
 - **Production Ready**: Configurable logging and stack trace control
-- **NestJS v9 & v10 Compatible**: Works with both major versions
+- **NestJS v10 & v11 Compatible**: Works with both major versions
 
 ## Installation
 
