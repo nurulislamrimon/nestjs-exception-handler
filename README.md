@@ -20,7 +20,7 @@ This package ensures **every error response follows the same standardized format
 
 - **Standardized Error Responses**: Consistent error format across your entire application
 - **ValidationPipe Support**: Automatic extraction and normalization of class-validator errors
-- **Prisma Integration**: Built-in support for Prisma error codes (P2002, P2003, P2005, P2006, P2025)
+- **Prisma Integration**: Built-in support for Prisma error codes (P2002, P2003, P2005, P2006, P2025) - works with Prisma 5.x through 7.x
 - **HttpException Handling**: Handles all NestJS HTTP exceptions with proper formatting
 - **404 Route Handling**: Converts unmatched routes to standardized format
 - **Unknown Error Handling**: Safe fallback for unexpected errors without leaking stack traces
@@ -28,6 +28,7 @@ This package ensures **every error response follows the same standardized format
 - **Type Safe**: Full TypeScript support with zero `any` types
 - **Production Ready**: Configurable logging and stack trace control
 - **NestJS v10 & v11 Compatible**: Works with both major versions
+- **Prisma v5 - v7 Compatible**: Works with Prisma 5.x, 6.x, and 7.x
 
 ## Installation
 

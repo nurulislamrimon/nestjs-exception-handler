@@ -1,29 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import {
-  PrismaClientKnownRequestError,
-  PrismaClientValidationError,
-  PrismaClientRustPanicError,
-  PrismaClientInitializationError,
-} from '@prisma/client/runtime/library';
 import { ErrorMessage } from '../interfaces/error-message.interface';
 import { ExceptionFormatter } from '../interfaces/exception-formatter.interface';
 
-type PrismaError =
-  | PrismaClientKnownRequestError
-  | PrismaClientValidationError
-  | PrismaClientRustPanicError
-  | PrismaClientInitializationError
-  | unknown;
+interface PrismaError {
+  code?: string;
+  meta?: Record<string, unknown>;
+  message?: string;
+  clientVersion?: string;
+}
 
 @Injectable()
 export class PrismaExceptionFormatter implements ExceptionFormatter {
   supports(exception: unknown): boolean {
-    return (
-      exception instanceof PrismaClientKnownRequestError ||
-      exception instanceof PrismaClientValidationError ||
-      exception instanceof PrismaClientRustPanicError ||
-      exception instanceof PrismaClientInitializationError
-    );
+    if (!exception || typeof exception !== 'object') {
+      return false;
+    }
+
+    const error = exception as Record<string, unknown>;
+    const hasErrorCode = typeof error.code === 'string';
+    const hasClientVersion = typeof error.clientVersion === 'string';
+    const hasMeta = typeof error.meta === 'object';
+
+    return hasErrorCode || (hasClientVersion && hasMeta);
   }
 
   format(exception: unknown): ErrorMessage[] {
@@ -35,27 +33,27 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
   }
 
   formatError(exception: PrismaError): ErrorMessage[] {
-    if (exception instanceof PrismaClientKnownRequestError) {
+    const code = exception.code;
+
+    if (code) {
       return this.formatPrismaError(exception);
     }
 
-    if (
-      exception instanceof PrismaClientValidationError ||
-      exception instanceof PrismaClientRustPanicError
-    ) {
+    const message = exception.message || '';
+    if (message.includes('validation') || message.includes('Rust') || message.includes('panic')) {
       return this.formatQueryError(exception);
     }
 
-    if (exception instanceof PrismaClientInitializationError) {
+    if (message.includes('initialization') || message.includes('connect')) {
       return this.formatInitializationError(exception);
     }
 
     return this.formatUnknownError(exception);
   }
 
-  private formatPrismaError(exception: PrismaClientKnownRequestError): ErrorMessage[] {
+  private formatPrismaError(exception: PrismaError): ErrorMessage[] {
     const code = exception.code;
-    const meta = exception.meta as Record<string, unknown> | undefined;
+    const meta = exception.meta;
 
     switch (code) {
       case 'P2002': {
@@ -113,28 +111,27 @@ export class PrismaExceptionFormatter implements ExceptionFormatter {
     }
   }
 
-  private formatQueryError(
-    exception: PrismaClientValidationError | PrismaClientRustPanicError,
-  ): ErrorMessage[] {
-    let message = 'Invalid database query.';
+  private formatQueryError(exception: PrismaError): ErrorMessage[] {
+    const message = exception.message || '';
+    let errorMessage = 'Invalid database query.';
 
-    if (exception instanceof PrismaClientRustPanicError) {
-      message = 'Database engine panic occurred.';
+    if (message.includes('panic')) {
+      errorMessage = 'Database engine panic occurred.';
     }
 
     return [
       {
         path: 'database',
-        message: [message],
+        message: [errorMessage],
       },
     ];
   }
 
-  private formatInitializationError(exception: PrismaClientInitializationError): ErrorMessage[] {
+  private formatInitializationError(exception: PrismaError): ErrorMessage[] {
     return [
       {
         path: 'database',
-        message: [`Database initialization error: ${exception.message}`],
+        message: [`Database initialization error: ${exception.message || 'Unknown error'}`],
       },
     ];
   }
